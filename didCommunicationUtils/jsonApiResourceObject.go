@@ -8,25 +8,29 @@ import (
 
 // A ResourceObject MUST contain "attributes", "type" ("Department", "HealthcareService", "Office", "Employee", etc.)
 // but also a DID ("didData.didDocument.id") and the created time
-// - attachments (Optional): additional data as DIDComm attachments
-// - attributes (Required): an attributes object representing some of the resource’s data.
-// - didData (Required): contains the DID at "didData.didDocument.id"
-// - id (Optional): CAUTION, it is an optional hashed ID from the blockchain, not a valid UUID or DID.
-// - meta (Optional): optional meta-information about a resource that can not be represented as an attribute or relationship.
-// - relationships: a relationships object describing relationships between the resource and other JSON:API resources.
-// - links: a links object containing links related to the resource.
-// - type (Required): internal resource type the request is about, e.g.: "Department", "HealthcareService", "Office", "Employee", "Profile", etc.
+//   - attachments (Optional): additional data as DIDComm attachments
+//   - attributes (Required): an attributes object representing some of the resource’s data.
+//   - didData (Required): contains the DID at "didData.didDocument.id"
+//   - id (Optional): CAUTION, it is an optional hashed ID from the blockchain, not a valid UUID or DID.
+//   - meta (Optional): optional meta-information about a resource that can not be represented as an attribute or relationship.
+//   - relationships: a relationships object describing relationships between the resource and other JSON:API resources.
+//   - links: a links object containing links related to the resource.
+//   - type (Required): internal resource type the request is about, e.g.: "Department", "HealthcareService", "Office", "Employee", "Profile", etc.
+//   - fullURL (Optional): added from FHIR Bundle.Entry specification
+//   - resource (Optional): added from FHIR Bundle.Entry specification
 type ResourceObject struct {
 	// using DIDComm attachments for the JSON:API resource
 	Attachments   *[]AttachmentV2          `json:"attachments,omitempty" bson:"attachments,omitempty"`
 	Attributes    map[string]interface{}   `json:"attributes,omitempty" bson:"attributes,omitempty"`
-	DidData       didDocumentUtils.DidData    `json:"didData,omitempty" bson:"didData,omitempty"`
-	IdHashed      *string                  `json:"id,omitempty" bson:"id,omitempty"` // CAUTION, it is a hashed ID from the blockchain, not a valid UUID or DID.
+	DidData       didDocumentUtils.DidData `json:"didData,omitempty" bson:"didData,omitempty"`
+	IdHashed      string                   `json:"id,omitempty" bson:"id,omitempty"` // CAUTION, it is a hashed ID from the blockchain, not a valid UUID or DID.
 	Included      []map[string]interface{} `json:"included,omitempty" bson:"included,omitempty"`
 	Meta          *map[string]interface{}  `json:"meta,omitempty" bson:"meta,omitempty"`
 	Relationships *map[string]interface{}  `json:"relationships,omitempty" bson:"relationships,omitempty"`
 	Request       *RequestData             `json:"request,omitempty" bson:"request,omitempty"`
-	Type          string                   `json:"type,omitempty" bson:"type,omitempty"` // internal resource type for the API
+	Type          string                   `json:"type,omitempty" bson:"type,omitempty"`         // internal resource type for the API
+	FullURL       string                   `json:"fullUrl,omitempty" bson:"fullUrl,omitempty"`   // added from FHIR Bundle.Entry specification
+	Resource      map[string]interface{}   `json:"resource,omitempty" bson:"resource,omitempty"` // added from FHIR Bundle.Entry specification
 	// Links         interface{}            `json:"links,omitempty" bson:"links,omitempty"`
 }
 
@@ -69,19 +73,18 @@ A “link object” is an object that represents a web link.
 
 A link object MUST contain the following member:
 
-    href: a string whose value is a URI-reference [RFC3986 Section 4.1] pointing to the link’s target.
+	href: a string whose value is a URI-reference [RFC3986 Section 4.1] pointing to the link’s target.
 
 A link object MAY also contain any of the following members:
 
-    rel: a string indicating the link’s relation type. The string MUST be a valid link relation type.
-    describedby: a link to a description document (e.g. OpenAPI or JSON Schema) for the link target.
-    title: a string which serves as a label for the destination of a link such that it can be used as a human-readable identifier (e.g., a menu entry).
-    type: a string indicating the media type of the link’s target.
-    hreflang: a string or an array of strings indicating the language(s) of the link’s target. An array of strings indicates that the link’s target is available in multiple languages. Each string MUST be a valid language tag [RFC5646].
-    meta: a metaObject containing non-standard meta-information about the link.
+	rel: a string indicating the link’s relation type. The string MUST be a valid link relation type.
+	describedby: a link to a description document (e.g. OpenAPI or JSON Schema) for the link target.
+	title: a string which serves as a label for the destination of a link such that it can be used as a human-readable identifier (e.g., a menu entry).
+	type: a string indicating the media type of the link’s target.
+	hreflang: a string or an array of strings indicating the language(s) of the link’s target. An array of strings indicates that the link’s target is available in multiple languages. Each string MUST be a valid language tag [RFC5646].
+	meta: a metaObject containing non-standard meta-information about the link.
 
-    Note: the type and hreflang members are only hints; the target resource is not guaranteed to be available in the indicated media type or language when the link is actually followed.
-
+	Note: the type and hreflang members are only hints; the target resource is not guaranteed to be available in the indicated media type or language when the link is actually followed.
 */
 type LinkObject struct {
 }

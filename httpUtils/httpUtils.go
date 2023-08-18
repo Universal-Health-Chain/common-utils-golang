@@ -5,44 +5,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/http"
-	"net/http/httptest"
 	"net/url"
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/gorilla/mux"
-)
-
-const (
-	// HeaderEnumAccept is a HeaderEnum enum value
-	HeaderEnumAccept = "Accept"
-
-	// HeaderEnumAcceptCharset is a HeaderEnum enum value
-	HeaderEnumAcceptCharset = "Accept-Charset"
-
-	// HeaderEnumAcceptDatetime is a HeaderEnum enum value
-	HeaderEnumAcceptDatetime = "Accept-Datetime"
-
-	// HeaderEnumAcceptEncoding is a HeaderEnum enum value
-	HeaderEnumAcceptEncoding = "Accept-Encoding"
-
-	// HeaderEnumAcceptLanguage is a HeaderEnum enum value
-	HeaderEnumAcceptLanguage = "Accept-Language"
-
-	// HeaderEnumAuthorization is a HeaderEnum enum value
-	HeaderEnumAuthorization = "Authorization"
-
-	// HeaderEnumHost is a HeaderEnum enum value
-	HeaderEnumHost = "Host"
-
-	// HeaderEnumOrigin is a HeaderEnum enum value
-	HeaderEnumOrigin = "Origin"
-
-	// HeaderEnumReferer is a HeaderEnum enum value
-	HeaderEnumReferer = "Referer"
 )
 
 const (
@@ -61,9 +28,65 @@ func HttpResponseBytes(w http.ResponseWriter, httpCode int, contentType string, 
 	w.Write(responseBytes)
 }
 
-// SendInternalHttpRequest sends an internal HttpRequestHeaders request to an internal endpoint with JSON or form data encoded
-// by using optional middleware and access token when defined and returns the bytes of the response or error.
-// gorilla/mux implements a request router and dispatcher for matching incoming requests to their respective handler.
+// url.Values maps a string key to a list of values. It is typically used for query parameters and form values.
+// url.Values.Encode() encodes the values into "URL encoded" form sorted by key ("bar=abc&foo=xyz").
+func SendExternalHttpRequest(urlPath, httpMethod string, contentType string, dataForm url.Values, dataJSON *map[string]interface{}) (*http.Response, error) {
+	switch contentType {
+	case MimeTypeForm:
+		return SendExternalHttpRequestFormEncoded(urlPath, httpMethod, dataForm)
+	case MimeTypeJSON:
+		return SendExternalHttpRequestJSON(urlPath, httpMethod, dataJSON)
+	}
+	return nil, errors.New("the content type specified is not supported")
+}
+
+// url.Values maps a string key to a list of values. It is typically used for query parameters and form values.
+// url.Values.Encode() encodes the values into "URL encoded" form sorted by key ("bar=abc&foo=xyz").
+func SendExternalHttpRequestFormEncoded(urlPath, httpMethod string, formData url.Values) (*http.Response, error) {
+	httpClient := &http.Client{Timeout: time.Second * 10} // given as parameter
+	// TODO: check httpClient and formData are not nil
+
+	// Encode encodes the values into "URL encoded" form ("bar=abc&foo=xyz") sorted by key.
+	encodedFormData := formData.Encode()
+	// fmt.Printf("formData encoded URL = %s\n", encodedFormData)
+
+	// preparing the HttpRequestHeaders request
+	httpRequest, err := http.NewRequest(httpMethod, urlPath, strings.NewReader(encodedFormData))
+	if err != nil {
+		_ = fmt.Errorf("http.NewRequest error = %v\n", err.Error())
+		return nil, fmt.Errorf("got error %s", err.Error())
+	}
+	httpRequest.Header.Add("Content-Type", MimeTypeForm)
+	httpRequest.Header.Add("Content-Length", strconv.Itoa(len(encodedFormData)))
+
+	// doing the http request
+	return httpClient.Do(httpRequest)
+}
+
+func SendExternalHttpRequestJSON(urlPath, httpMethod string, dataJSON *map[string]interface{}) (*http.Response, error) {
+	httpClient := &http.Client{Timeout: time.Second * 10} // given as parameter
+	// TODO: check httpClient and formData are not nil
+
+	var dataBuffer *bytes.Buffer
+	dataBytes, _ := json.Marshal(*dataJSON)
+	dataBuffer = bytes.NewBuffer(dataBytes)
+	// preparing the HttpRequestHeaders request
+	httpRequest, _ := http.NewRequest(httpMethod, urlPath, dataBuffer) // "POST", "GET" ...
+	httpRequest.Header.Add("Content-Type", MimeTypeJSON)
+	httpRequest.Header.Add("Content-Length", strconv.Itoa(len(dataBytes)))
+
+	// doing the http request
+	return httpClient.Do(httpRequest)
+}
+
+func ReturnDIDCommPayloadJSON(w http.ResponseWriter, data []byte, errMsg string) {
+	w.WriteHeader(http.StatusBadRequest)
+	w.Header().Set("Content-Type", "application/json")
+
+	w.Write(data)
+}
+
+/*
 func SendInternalHttpRequest(
 	dataJSON *map[string]interface{},
 	dataFormEncoded *string,
@@ -72,7 +95,7 @@ func SendInternalHttpRequest(
 	contentType *string, // "application/x-www-form-urlencoded"
 	acceptResponseFormat *string,
 	controllerFunc func(http.ResponseWriter, *http.Request), // only for testing controllers
-	middleWareFunc *mux.MiddlewareFunc,
+	middleWareFunc *interface{},
 	accessToken *string) (*[]byte, error) {
 
 	// TODO: check controllerFunc is not nil
@@ -126,78 +149,4 @@ func SendInternalHttpRequest(
 	responseBytes, err := ioutil.ReadAll(response.Body)
 	return &responseBytes, err
 }
-
-// url.Values maps a string key to a list of values. It is typically used for query parameters and form values.
-// url.Values.Encode() encodes the values into "URL encoded" form sorted by key ("bar=abc&foo=xyz").
-func SendExternalHttpRequest(urlPath, httpMethod string, contentType string, dataForm url.Values, dataJSON *map[string]interface{}) (*http.Response, error) {
-	switch contentType {
-	case MimeTypeForm:
-		return SendExternalHttpRequestFormEncoded(urlPath, httpMethod, dataForm)
-	case MimeTypeJSON:
-		return SendExternalHttpRequestJSON(urlPath, httpMethod, dataJSON)
-	}
-	return nil, errors.New("the content type specified is not supported")
-}
-
-// url.Values maps a string key to a list of values. It is typically used for query parameters and form values.
-// url.Values.Encode() encodes the values into "URL encoded" form sorted by key ("bar=abc&foo=xyz").
-func SendExternalHttpRequestFormEncoded(urlPath, httpMethod string, formData url.Values) (*http.Response, error) {
-	httpClient := &http.Client{Timeout: time.Second * 10} // given as parameter
-	// TODO: check httpClient and formData are not nil
-
-	// Encode encodes the values into "URL encoded" form ("bar=abc&foo=xyz") sorted by key.
-	encodedFormData := formData.Encode()
-	// fmt.Printf("formData encoded URL = %s\n", encodedFormData)
-
-	// preparing the HttpRequestHeaders request
-	httpRequest, err := http.NewRequest(httpMethod, urlPath, strings.NewReader(encodedFormData))
-	if err != nil {
-		fmt.Errorf("http.NewRequest error = %v\n", err.Error())
-		return nil, fmt.Errorf("Got error %s", err.Error())
-	}
-	httpRequest.Header.Add("Content-Type", MimeTypeForm)
-	httpRequest.Header.Add("Content-Length", strconv.Itoa(len(encodedFormData)))
-
-	// doing the http request
-	return httpClient.Do(httpRequest)
-}
-
-func SendExternalHttpRequestJSON(urlPath, httpMethod string, dataJSON *map[string]interface{}) (*http.Response, error) {
-	httpClient := &http.Client{Timeout: time.Second * 10} // given as parameter
-	// TODO: check httpClient and formData are not nil
-
-	var dataBuffer *bytes.Buffer
-	dataBytes, _ := json.Marshal(*dataJSON)
-	dataBuffer = bytes.NewBuffer(dataBytes)
-	// preparing the HttpRequestHeaders request
-	httpRequest, _ := http.NewRequest(httpMethod, urlPath, dataBuffer) // "POST", "GET" ...
-	httpRequest.Header.Add("Content-Type", MimeTypeJSON)
-	httpRequest.Header.Add("Content-Length", strconv.Itoa(len(dataBytes)))
-
-	// doing the http request
-	return httpClient.Do(httpRequest)
-}
-
-// GetHttpHeaders returns the OpenID HTTP headers
-// TODO: return all the headers
-// Headers are case insensitive as per RFC2616 (RFC 7230 does not modify this)
-// https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2
-// https://www.rfc-editor.org/rfc/rfc7230#appendix-A.2
-var GetHttpHeaders = func(r *http.Request) *HttpPrivateHeadersOpenid {
-	privateHeaders := HttpPrivateHeadersOpenid{
-		Authorization: r.Header.Get("Authorization"),
-		ContentType:   r.Header.Get("Content-Type"),
-		DPoP:          r.Header.Get("DPoP"),
-		Accept:        r.Header.Get("Accept"),
-		// IDToken:       r.Header.Get("IdToken"),
-	}
-
-	return &privateHeaders
-}
-
-func ReturnDIDCommPayloadJSON(w http.ResponseWriter, data []byte, errMsg string) {
-	w.WriteHeader(http.StatusBadRequest)
-	w.Header().Set("Content-Type", "application/json")
-
-	w.Write(data)
-}
+*/

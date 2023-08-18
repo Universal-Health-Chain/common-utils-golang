@@ -1,9 +1,40 @@
 package httpUtils
 
+import "net/http"
+
+const (
+	// HeaderEnumAccept is a HeaderEnum enum value
+	HeaderEnumAccept = "Accept"
+
+	// HeaderEnumAcceptCharset is a HeaderEnum enum value
+	HeaderEnumAcceptCharset = "Accept-Charset"
+
+	// HeaderEnumAcceptDatetime is a HeaderEnum enum value
+	HeaderEnumAcceptDatetime = "Accept-Datetime"
+
+	// HeaderEnumAcceptEncoding is a HeaderEnum enum value
+	HeaderEnumAcceptEncoding = "Accept-Encoding"
+
+	// HeaderEnumAcceptLanguage is a HeaderEnum enum value
+	HeaderEnumAcceptLanguage = "Accept-Language"
+
+	// HeaderEnumAuthorization is a HeaderEnum enum value
+	HeaderEnumAuthorization = "Authorization"
+
+	// HeaderEnumHost is a HeaderEnum enum value
+	HeaderEnumHost = "Host"
+
+	// HeaderEnumOrigin is a HeaderEnum enum value
+	HeaderEnumOrigin = "Origin"
+
+	// HeaderEnumReferer is a HeaderEnum enum value
+	HeaderEnumReferer = "Referer"
+)
+
 // HttpResponseHeaders contains the HttpRequestHeaders Response Header Fields, see:
-// - RFC7531 https://httpwg.org/specs/rfc7231.html#request.header.fields
-// 	 and https://httpwg.org/specs/rfc7231.html#status.codes;
-// - RFC9110 https://www.rfc-editor.org/rfc/rfc9110.html
+//   - RFC7531 https://httpwg.org/specs/rfc7231.html#request.header.fields
+//     and https://httpwg.org/specs/rfc7231.html#status.codes;
+//   - RFC9110 https://www.rfc-editor.org/rfc/rfc9110.html
 //
 // The response-header fields (case insensitive)
 // - Accept-Ranges
@@ -97,4 +128,21 @@ type HttpRequestHeaders struct {
 	DPoP *string `json:"dpop,omitempty" bson:"dpop,omitempty"`
 	// IDToken       joseUtils.DataJWT `json:"id_token,omitempty" bson:"idToken,omitempty"`
 	// ContentLength *string `json:"contentLength,omitempty" bson:"contentLength,omitempty"` // convert to number to check content size
+}
+
+// GetHttpHeaders returns the OpenID HTTP headers
+// TODO: return all the headers
+// Headers are case insensitive as per RFC2616 (RFC 7230 does not modify this)
+// https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2
+// https://www.rfc-editor.org/rfc/rfc7230#appendix-A.2
+var GetHttpHeaders = func(r *http.Request) *HttpPrivateHeadersOpenid {
+	privateHeaders := HttpPrivateHeadersOpenid{
+		Authorization: r.Header.Get("Authorization"),
+		ContentType:   r.Header.Get("Content-Type"),
+		DPoP:          r.Header.Get("DPoP"),
+		Accept:        r.Header.Get("Accept"),
+		// IDToken:       r.Header.Get("IdToken"),
+	}
+
+	return &privateHeaders
 }
