@@ -1,7 +1,6 @@
 package didCommunicationUtils
 
 import (
-	"errors"
 	"regexp"
 	"strings"
 	"time"
@@ -10,18 +9,18 @@ import (
 )
 
 var (
-	ErrEmptyData               = errors.New("the data is empty")
-	ErrOpenidInvalidRequest    = "invalid_request"
-	ErrOpenidInvalidToken      = "invalid_token"
-	ErrOpenidInsufficientScope = "insufficient_scope"
+	ErrMsgEmptyData               = "the data is empty"
+	ErrMsgOpenidInvalidRequest    = "invalid_request"
+	ErrMsgOpenidInvalidToken      = "invalid_token"
+	ErrMsgOpenidInsufficientScope = "insufficient_scope"
 
-	ErrServerError = "server encountered an unexpected condition"
+	ErrMsgServerError = "server encountered an unexpected condition"
 
-	ErrUnauthorized_client     = "client is not authorized to request"
-	ErrAccessDenied            = "resource owner or authorization server denied the request"
-	ErrUnsupportedResponseType = "unsupported response type"
-	ErrInvalidScope            = "request scope is invalid, unknown or malformed"
-	ErrTemporarilyUnavailable  = "authorization server is currently unable to handle the request" //due to a temporary overloading or maintenance of the server
+	ErrMsgUnauthorized_client     = "client is not authorized to request"
+	ErrMsgAccessDenied            = "resource owner or authorization server denied the request"
+	ErrMsgUnsupportedResponseType = "unsupported response type"
+	ErrMsgInvalidScope            = "request scope is invalid, unknown or malformed"
+	ErrMsgTemporarilyUnavailable  = "authorization server is currently unable to handle the request" //due to a temporary overloading or maintenance of the server
 )
 
 // const OpenidRequestDataBackendType = "didCommunicationUtils-plain+json" // "application/" prefix is omitted (RFC 7515)

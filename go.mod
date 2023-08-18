@@ -20,6 +20,7 @@ require (
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.1.0 // indirect
 	github.com/goccy/go-json v0.10.0 // indirect
 	github.com/google/tink/go v1.7.0
+	github.com/joho/godotenv v1.5.1
 	github.com/joncalhoun/form v1.0.1
 	github.com/klauspost/cpuid/v2 v2.2.1 // indirect
 	github.com/lestrrat-go/backoff/v2 v2.0.8 // indirect
