@@ -9,6 +9,7 @@ import (
 )
 
 var (
+	ErrMsgNotFound                = "not found"
 	ErrMsgEmptyData               = "the data is empty"
 	ErrMsgOpenidInvalidRequest    = "invalid_request"
 	ErrMsgOpenidInvalidToken      = "invalid_token"

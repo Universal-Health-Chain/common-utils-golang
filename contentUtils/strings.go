@@ -4,6 +4,17 @@ import (
 	"strings"
 )
 
+// TODO: describe the function
+func Contains(slice []string, item string) bool {
+	set := make(map[string]struct{}, len(slice))
+	for _, s := range slice {
+		set[s] = struct{}{}
+	}
+
+	_, ok := set[item]
+	return ok
+}
+
 // StringsSliceContainsString checks if a string is contained in some member of the slice
 func StringsSliceContainsString(slice []string, strValue string) bool {
 	for _, entry := range slice {

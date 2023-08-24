@@ -3,6 +3,7 @@ package contentUtils
 import (
 	"crypto/hmac"
 	"crypto/sha256"
+	"encoding/base64"
 )
 
 // ComputeMAC creates a message authentication code (MAC), sometimes known as a "tag",
@@ -21,4 +22,17 @@ func ComputeMAC(message, key []byte) []byte {
 func ValidMAC(message, messageMAC, key []byte) bool {
 	expectedMAC := ComputeMAC(message, key)
 	return hmac.Equal(messageMAC, expectedMAC)
+}
+
+// returns protected attribute name and value, raw Base64Url encoded (without padding characters '=')
+func ComputeIndexedAttributeByHmacKey(hmacKey []byte, attributeName, attributeValue string) (string, string) {
+	// 1 - create the HMAC data with the HMAC Key
+	hmacAttributeName := ComputeMAC([]byte(attributeName), hmacKey)
+	hmacAttributeValue := ComputeMAC([]byte(attributeValue), hmacKey)
+
+	// 2 - return both protected name and value encoded in raw Base64Url format (without padding characters '=')
+	hmacAttributeNameBase64Url := base64.RawURLEncoding.EncodeToString(hmacAttributeName)
+	hmacAttributeValueBase64Url := base64.RawURLEncoding.EncodeToString(hmacAttributeValue)
+
+	return hmacAttributeNameBase64Url, hmacAttributeValueBase64Url
 }
