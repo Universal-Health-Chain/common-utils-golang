@@ -10,7 +10,7 @@ require (
 require (
 	github.com/cenkalti/backoff/v4 v4.1.1 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
-	github.com/hyperledger/aries-framework-go/spi v0.0.0-20220330140627-07042d78580c // indirect
+	github.com/hyperledger/aries-framework-go/spi v0.0.0-20220330140627-07042d78580c
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
