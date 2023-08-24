@@ -8,6 +8,13 @@ require (
 )
 
 require (
+	github.com/go-kivik/couchdb/v3 v3.2.6 // indirect
+	github.com/go-kivik/kivik/v3 v3.2.3 // indirect
+	golang.org/x/net v0.2.0 // indirect
+	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
+)
+
+require (
 	github.com/cenkalti/backoff/v4 v4.1.1 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/hyperledger/aries-framework-go/spi v0.0.0-20220330140627-07042d78580c
@@ -31,10 +38,13 @@ require (
 require (
 	github.com/aaronarduino/goqrsvg v0.0.0-20220419053939-17e843f1dd40
 	github.com/boombuler/barcode v1.0.1
+	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.1.0 // indirect
 	github.com/goccy/go-json v0.10.0 // indirect
 	github.com/google/tink/go v1.7.0
+	github.com/hyperledger/aries-framework-go-ext/component/storage/couchdb v0.0.0-20230622181036-ef011d8df3d5
 	github.com/hyperledger/aries-framework-go-ext/component/storage/mongodb v0.0.0-20230622181036-ef011d8df3d5
+	github.com/hyperledger/aries-framework-go/component/storageutil v0.0.0-20230823143713-917ccf5c8cd2
 	// github.com/joho/godotenv v1.5.1
 	github.com/joncalhoun/form v1.0.1
 	github.com/klauspost/cpuid/v2 v2.2.1 // indirect
@@ -51,6 +61,7 @@ require (
 	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/stretchr/testify v1.8.4
+	github.com/trustbloc/edge-core v0.1.8
 	github.com/trustbloc/edv v0.1.30
 	go.mongodb.org/mongo-driver v1.12.1
 	golang.org/x/crypto v0.3.0
