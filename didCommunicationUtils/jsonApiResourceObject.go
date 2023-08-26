@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/Universal-Health-Chain/common-utils-golang/didDocumentUtils"
+	"github.com/trustbloc/edv/pkg/restapi/edv/models"
 )
 
 // A ResourceObject MUST contain "attributes", "type" ("Department", "HealthcareService", "Office", "Employee", etc.)
@@ -19,18 +20,22 @@ import (
 //   - fullURL (Optional): added from FHIR Bundle.Entry specification
 //   - resource (Optional): added from FHIR Bundle.Entry specification
 type ResourceObject struct {
-	// using DIDComm attachments for the JSON:API resource
-	Attachments   *[]AttachmentV2          `json:"attachments,omitempty" bson:"attachments,omitempty"`
-	Attributes    map[string]interface{}   `json:"attributes,omitempty" bson:"attributes,omitempty"`
-	DidData       didDocumentUtils.DidData `json:"didData,omitempty" bson:"didData,omitempty"`
-	IdHashed      string                   `json:"id,omitempty" bson:"id,omitempty"` // CAUTION, it is a hashed ID from the blockchain, not a valid UUID or DID.
-	Included      []map[string]interface{} `json:"included,omitempty" bson:"included,omitempty"`
-	Meta          *map[string]interface{}  `json:"meta,omitempty" bson:"meta,omitempty"`
-	Relationships *map[string]interface{}  `json:"relationships,omitempty" bson:"relationships,omitempty"`
-	Request       *RequestData             `json:"request,omitempty" bson:"request,omitempty"`
-	Type          string                   `json:"type,omitempty" bson:"type,omitempty"`         // internal resource type for the API
-	FullURL       string                   `json:"fullUrl,omitempty" bson:"fullUrl,omitempty"`   // added from FHIR Bundle.Entry specification
-	Resource      map[string]interface{}   `json:"resource,omitempty" bson:"resource,omitempty"` // added from FHIR Bundle.Entry specification
+	// using DIDComm "attachments" for the JSON:API resource
+	// and enabling compatibility with confidential storage ("sequence", "indexed", "jwe")
+	Attachments   *[]AttachmentV2                     `json:"attachments,omitempty" bson:"attachments,omitempty"`
+	Attributes    map[string]interface{}              `json:"attributes,omitempty" bson:"attributes,omitempty"`
+	DidData       didDocumentUtils.DidData            `json:"didData,omitempty" bson:"didData,omitempty"`
+	IdHashed      string                              `json:"id,omitempty" bson:"id,omitempty"` // CAUTION, it is a hashed ID from the blockchain, not a valid UUID or DID.
+	Included      []map[string]interface{}            `json:"included,omitempty" bson:"included,omitempty"`
+	Meta          *map[string]interface{}             `json:"meta,omitempty" bson:"meta,omitempty"`
+	Relationships *map[string]interface{}             `json:"relationships,omitempty" bson:"relationships,omitempty"`
+	Request       *RequestData                        `json:"request,omitempty" bson:"request,omitempty"`
+	Type          string                              `json:"type,omitempty" bson:"type,omitempty"`         // internal resource type for the API
+	FullURL       string                              `json:"fullUrl,omitempty" bson:"fullUrl,omitempty"`   // added from FHIR Bundle.Entry specification
+	Resource      map[string]interface{}              `json:"resource,omitempty" bson:"resource,omitempty"` // added from FHIR Bundle.Entry specification
+	Sequence      uint64                              `json:"sequence,omitempty" bson:"sequence,omitempty"`
+	Indexed       []models.IndexedAttributeCollection `json:"indexed,omitempty" bson:"indexed,omitempty"`
+	JWE           json.RawMessage                     `json:"jwe,omitempty" bson:"jwe,omitempty"`
 	// Links         interface{}            `json:"links,omitempty" bson:"links,omitempty"`
 }
 
