@@ -2,6 +2,7 @@ package decodeUtils
 
 import (
 	"encoding/json"
+	"net/http"
 	"strings"
 
 	"github.com/Universal-Health-Chain/common-utils-golang/didCommunicationUtils"
@@ -82,4 +83,19 @@ var GetDecodedRequestWithTokenData = func(compactJWT string, httpHeaders httpUti
 
 	// 5 - TODO: setting the metadata: JWE and JWS header, Bearer access token and DPoP token
 	return decodedPayload, ""
+}
+
+func DecodedRequestPayload(r *http.Request) (decodedPayload *didCommunicationUtils.DecodedRequestPayloadJAR, errorMsg string) {
+	headers := httpUtils.GetHttpHeaders(r)
+
+	if !strings.Contains(headers.ContentType, "json") {
+		return nil, "Content-Type must be `application/json`"
+	}
+
+	var payload *didCommunicationUtils.DecodedRequestPayloadJAR
+	err := json.NewDecoder(r.Body).Decode(&payload)
+	if err != nil {
+		return nil, err.Error()
+	}
+	return payload, ""
 }
