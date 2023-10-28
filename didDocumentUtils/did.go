@@ -2,18 +2,17 @@ package didDocumentUtils
 
 import (
 	"strings"
-
 )
 
 // DidDetailsAudit contains additional data on the blockchain (can be duplicated on the local DB or not).
 // Some DID parameters are completely independent of any specific DID method and function the same way for all DIDs.
 // Other DID parameters are not supported by all DID methods: https://www.w3.org/TR/did-core/#did-parameters
-//  - Txn and TxTime are non-standard parameters.
-//  - Hl (HashLink) example: "did:example:123?hl=zQmWvQxTqbG2Z9HPJgG57jjwR154cKhbtJenbyYTWkjgF3e"
-//  - VersionTime: identifies a certain version timestamp of a DID document to be resolved.
-//	The DID document was valid for a DID at a certain time.
-//	This datetime value MUST be normalized to UTC 00:00:00 (seconds, without sub-second decimal precision).
-// 	Example for VersionTime parameter request: "did:example:123?versionTime=2016-10-17T02:41:00Z"
+//   - Txn and TxTime are non-standard parameters.
+//   - Hl (HashLink) example: "did:example:123?hl=zQmWvQxTqbG2Z9HPJgG57jjwR154cKhbtJenbyYTWkjgF3e"
+//   - VersionTime: identifies a certain version timestamp of a DID document to be resolved.
+//     The DID document was valid for a DID at a certain time.
+//     This datetime value MUST be normalized to UTC 00:00:00 (seconds, without sub-second decimal precision).
+//     Example for VersionTime parameter request: "did:example:123?versionTime=2016-10-17T02:41:00Z"
 type DidDetailsAudit struct {
 	// JWKSet      jwkUtils.JWKeySet `json:"jwks,omitempty" bson:"jwks,omitempty"`
 	Active      bool    `json:"active,omitempty" bson:"active,omitempty"`
@@ -28,9 +27,10 @@ type DidDetailsAudit struct {
 // EBSIv2 DID resolution only returns the DID Document but not the metadata:
 // https://ec.europa.eu/digital-building-blocks/wikis/display/EBSIDOC/Verifiable+Credential+API+and+Library
 type DidData struct {
-	DidDocument           DidDoc                                `json:"didDocument,omitempty" bson:"didDocument,omitempty"`
-	DidDocumentMetadata   DidDocumentMetadata                   `json:"didDocumentMetadata,omitempty" bson:"didDocumentMetadata,omitempty"`
-	DidResolutionMetadata DidDetailsAudit `json:"didResolutionMetadata,omitempty" bson:"didResolutionMetadata,omitempty"`
+	DidDocument           DidDoc              `json:"didDocument,omitempty" bson:"didDocument,omitempty"`
+	DidDocumentMetadata   DidDocumentMetadata `json:"didDocumentMetadata,omitempty" bson:"didDocumentMetadata,omitempty"`
+	DidResolutionMetadata DidDetailsAudit     `json:"didResolutionMetadata,omitempty" bson:"didResolutionMetadata,omitempty"`
+	DidPrivateKeys        []DidPrivateKey     `json:"didPrivateKeys,omitempty" bson:"didPrivateKeys,omitempty"`
 }
 
 func CheckDidDataAndSintax(didData *DidData, didBase, resourceType, identifierKind string) string {

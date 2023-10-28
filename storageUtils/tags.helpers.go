@@ -16,7 +16,8 @@ func GenerateAriesDocumentEntryKey(vaultID, documentID string) string {
 	return fmt.Sprintf("%s-%s", vaultID, documentID)
 }
 
-// tags are the vaultID and every indexed attribute (attribute name and attribute value)
+// Getting an array of tags (name and value) from the indexed attributes.
+// Tags are both the "vaultID" attribute name and any other indexed attribute (name and value)
 func CreateTags(vaultID string, document EncryptedDocument) []storage.Tag {
 	tags := []storage.Tag{
 		{Name: VaultIDTagName, Value: vaultID},
@@ -34,7 +35,6 @@ func CreateTags(vaultID string, document EncryptedDocument) []storage.Tag {
 	return tags
 }
 
-
 func VaultIDTagMatches(targetVaultID string, queryResultsIterator storage.Iterator) (bool, error) {
 	tags, err := queryResultsIterator.Tags()
 	if err != nil {
@@ -49,4 +49,3 @@ func VaultIDTagMatches(targetVaultID string, queryResultsIterator storage.Iterat
 
 	return false, nil
 }
-

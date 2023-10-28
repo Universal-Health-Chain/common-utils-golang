@@ -12,8 +12,6 @@ import (
 	"github.com/trustbloc/edv/pkg/restapi/edv/models"
 )
 
-const EdvIDSize = 16
-
 // Query represents an incoming vault query.
 // See https://identity.foundation/edv-spec/#searching-encrypted-documents for more info.
 // An empty attribute value is treated as a wildcard, whereby any attribute value for that attribute name can be

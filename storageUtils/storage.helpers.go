@@ -20,7 +20,7 @@ import (
 	ariesStorage "github.com/hyperledger/aries-framework-go/spi/storage"
 )
 
-var logger = log.New("edv-rest")
+var logger = log.New("storage-provider")
 
 const (
 	DatabaseTypeMemOption     = "mem"
